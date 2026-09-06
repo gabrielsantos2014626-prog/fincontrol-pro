@@ -7,12 +7,12 @@ void main() async {
   
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-      apiKey: "COLE_A_API_KEY_AQUI",
-      appId: "COLE_O_APP_ID_AQUI",
-      messagingSenderId: "COLE_O_MESSAGING_SENDER_ID_AQUI",
-      projectId: "COLE_O_PROJECT_ID_AQUI",
-      authDomain: "COLE_O_AUTH_DOMAIN_AQUI",
-      storageBucket: "COLE_O_STORAGE_BUCKET_AQUI",
+      apiKey: "AIzaSyCmsJunrKaP7bAU1RZ21T67aTLDec-kUs0",
+      appId: "1:1069362142791:web:a9c9e3a7597e493bd29b62",
+      messagingSenderId: "1069362142791",
+      projectId: "fincontrol-pro-a8176",
+      authDomain: "fincontrol-pro-a8176.firebaseapp.com",
+      storageBucket: "fincontrol-pro-a8176.firebasestorage.app",
     ),
   );
 
