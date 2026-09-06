@@ -1,9 +1,21 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: "COLE_A_API_KEY_AQUI",
+      appId: "COLE_O_APP_ID_AQUI",
+      messagingSenderId: "COLE_O_MESSAGING_SENDER_ID_AQUI",
+      projectId: "COLE_O_PROJECT_ID_AQUI",
+      authDomain: "COLE_O_AUTH_DOMAIN_AQUI",
+      storageBucket: "COLE_O_STORAGE_BUCKET_AQUI",
+    ),
+  );
+
   runApp(const FinApp());
 }
 
