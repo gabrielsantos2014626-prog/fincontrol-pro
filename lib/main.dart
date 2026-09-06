@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -16,7 +16,7 @@ void main() async {
     ),
   );
 
-  runApp(const FinApp());
+  runApp(const FinControlAuthApp());
 }
 
 // Global User State
@@ -1750,6 +1750,169 @@ class _MiniCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         ],
+      ),
+    );
+  }
+}
+
+import 'package:firebase_auth/firebase_auth.dart';
+
+class FinControlAuthApp extends StatelessWidget {
+  const FinControlAuthApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'FinControl Pro',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
+      home: const AuthGate(),
+    );
+  }
+}
+
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        // Enquanto carrega o status do Firebase
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        // Se o usuário estiver autenticado de verdade no Firebase, abre o seu app normal (FinApp)
+        if (snapshot.hasData) {
+          return const FinApp();
+        }
+
+        // Caso contrário, obriga a mostrar a tela de Login/Cadastro segura
+        return const FirebaseLoginScreen();
+      },
+    );
+  }
+}
+
+// Tela de autenticação real integrada ao Firebase Auth
+class FirebaseLoginScreen extends StatefulWidget {
+  const FirebaseLoginScreen({super.key});
+
+  @override
+  State<FirebaseLoginScreen> createState() => _FirebaseLoginScreenState();
+}
+
+class _FirebaseLoginScreenState extends State<FirebaseLoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isRegistering = false;
+  String _errorMessage = '';
+  bool _isLoading = false;
+
+  Future<void> _submit() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      if (_isRegistering) {
+        // Cria a conta de verdade no Firebase Auth
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+      } else {
+        // Faz o login validando e-mail e senha no Firebase
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_isRegistering ? 'Criar Conta - FinControl Pro' : 'Acessar - FinControl Pro'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'FinControl Pro',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'E-mail',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Senha',
+                    border: OutlineInputBorder(),
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 20),
+                if (_errorMessage.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Text(
+                      _errorMessage,
+                      style: const TextStyle(color: Colors.red, fontSize: 13),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _submit,
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : Text(_isRegistering ? 'Cadastrar Conta' : 'Entrar'),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => setState(() => _isRegistering = !_isRegistering),
+                  child: Text(_isRegistering
+                      ? 'Já tem uma conta? Faça login'
+                      : 'Não tem conta? Crie uma agora'),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
