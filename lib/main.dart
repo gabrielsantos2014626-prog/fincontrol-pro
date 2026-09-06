@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -149,195 +150,7 @@ class FinApp extends StatelessWidget {
           error: Color(0xFFEF4444),
         ),
       ),
-      home: const LoginScreen(),
-    );
-  }
-}
-
-// ==================== TELA DE LOGIN ====================
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _senhaController = TextEditingController();
-
-  void _fazerLogin() {
-    if (_emailController.text.isNotEmpty && _senhaController.text.isNotEmpty) {
-      UserData.email = _emailController.text;
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainPage()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preencha e-mail e senha para entrar!')),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Icon(Icons.account_balance_wallet_rounded, size: 70, color: Color(0xFF10B981)),
-              const SizedBox(height: 16),
-              const Text(
-                'FinControl Pro',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-              const Text(
-                'Acesse sua conta para continuar',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
-              const SizedBox(height: 32),
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'E-mail',
-                  prefixIcon: const Icon(Icons.email_outlined),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _senhaController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Senha',
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF10B981),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                onPressed: _fazerLogin,
-                child: const Text('ENTRAR', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CadastroScreen()),
-                  );
-                },
-                child: const Text(
-                  'Não tem uma conta? Crie aqui',
-                  style: TextStyle(color: Color(0xFF10B981)),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ==================== TELA DE CADASTRO ====================
-class CadastroScreen extends StatefulWidget {
-  const CadastroScreen({super.key});
-
-  @override
-  State<CadastroScreen> createState() => _CadastroScreenState();
-}
-
-class _CadastroScreenState extends State<CadastroScreen> {
-  final _nomeController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _senhaController = TextEditingController();
-
-  void _salvarCadastro() {
-    if (_nomeController.text.isEmpty || _emailController.text.isEmpty || _senhaController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preencha os campos obrigatórios!')),
-      );
-      return;
-    }
-
-    UserData.nomeCompleto = _nomeController.text;
-    UserData.email = _emailController.text;
-    AppStore.reset();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Conta criada com sucesso! Faça login.')),
-    );
-    Navigator.pop(context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Criar Nova Conta'),
-        backgroundColor: Colors.transparent,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: _nomeController,
-              decoration: InputDecoration(
-                labelText: 'Nome Completo',
-                prefixIcon: const Icon(Icons.person_outline),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                labelText: 'E-mail',
-                prefixIcon: const Icon(Icons.email_outlined),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _senhaController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Crie uma Senha',
-                prefixIcon: const Icon(Icons.lock_outline),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF10B981),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              onPressed: _salvarCadastro,
-              child: const Text('CADASTRAR', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
-            ),
-          ],
-        ),
-      ),
+      home: const MainPage(),
     );
   }
 }
@@ -411,7 +224,7 @@ class AppDrawer extends StatelessWidget {
               color: Color(0xFF0F172A),
             ),
             accountName: Text(UserData.primeiroNome(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-            accountEmail: Text(UserData.email),
+            accountEmail: Text(UserData.email.isNotEmpty ? UserData.email : (FirebaseAuth.instance.currentUser?.email ?? '')),
             currentAccountPicture: const CircleAvatar(
               backgroundColor: Color(0xFF10B981),
               child: Icon(Icons.person, color: Colors.white, size: 36),
@@ -437,9 +250,9 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.redAccent),
             title: const Text('Sair'),
-            onTap: () {
+            onTap: () async {
               Navigator.pop(context);
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+              await FirebaseAuth.instance.signOut();
             },
           ),
         ],
@@ -1787,7 +1600,7 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        // Se o usuário estiver autenticado de verdade no Firebase, abre o seu app normal (FinApp)
+        // Se o usuário estiver autenticado de verdade no Firebase, abre o app normal (FinApp)
         if (snapshot.hasData) {
           return const FinApp();
         }
@@ -1915,5 +1728,3 @@ class _FirebaseLoginScreenState extends State<FirebaseLoginScreen> {
     );
   }
 }
-}
-
