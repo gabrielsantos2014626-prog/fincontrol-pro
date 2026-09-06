@@ -1755,8 +1755,6 @@ class _MiniCard extends StatelessWidget {
   }
 }
 
-import 'package:firebase_auth/firebase_auth.dart';
-
 class FinControlAuthApp extends StatelessWidget {
   const FinControlAuthApp({super.key});
 
@@ -1917,3 +1915,5 @@ class _FirebaseLoginScreenState extends State<FirebaseLoginScreen> {
     );
   }
 }
+}
+
